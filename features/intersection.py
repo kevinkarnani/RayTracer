@@ -14,6 +14,5 @@ class Intersection(np.ndarray):
     def count(self):
         return self.shape[0]
 
-    @property
     def hit(self):
-        return self.min(axis=1)
+        return self.min(axis=1) if self.shape[0] else None

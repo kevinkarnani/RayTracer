@@ -20,10 +20,11 @@ class Sphere:
 
         d = b ** 2 - 4 * a * c
 
-        t1 = (-b - d ** 0.5) / (2 * a)
-        t2 = (-b + d ** 0.5) / (2 * a)
         if d < 0:
             return Intersection(np.array([]), self)
+
+        t1 = (-b - d ** 0.5) / (2 * a)
+        t2 = (-b + d ** 0.5) / (2 * a)
         return Intersection(np.vstack([t1, t2]), self)
 
     def set_transform(self, t):
