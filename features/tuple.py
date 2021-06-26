@@ -18,22 +18,22 @@ class Tuple:
 
     def __add__(self, other):
         if self.w + other.w in [0, 1]:
-            return Tuple(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+            return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
         else:
             print("Cannot add two points together!")
 
     def __sub__(self, other):
         if self.w - other.w in [0, 1]:
-            return Tuple(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+            return self.__class__(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
         else:
             print("Cannot subtract a point from a vector!")
 
     def __neg__(self):
-        return Tuple(-self.x, -self.y, -self.z, -self.w)
+        return self.__class__(-self.x, -self.y, -self.z, -self.w)
 
     def __mul__(self, other):
         if isinstance(other, int) or isinstance(other, float):
-            return Tuple(self.x * other, self.y * other, self.z * other, self.w * other)
+            return self.__class__(self.x * other, self.y * other, self.z * other, self.w * other)
         else:
             print("Cannot multiply tuple by anything apart from int and float!")
 
@@ -42,7 +42,7 @@ class Tuple:
 
     def __truediv__(self, other):
         if isinstance(other, int) or isinstance(other, float):
-            return Tuple(self.x / other, self.y / other, self.z / other, self.w / other)
+            return self.__class__(self.x / other, self.y / other, self.z / other, self.w / other)
         else:
             print("Cannot divide tuple by anything apart from int and float!")
 
@@ -51,38 +51,41 @@ class Tuple:
 
     def normalize(self):
         length = self.magnitude()
-        return Tuple(self.x / length, self.y / length, self.z / length, self.w / length)
+        return self.__class__(self.x / length, self.y / length, self.z / length, self.w / length)
 
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
 
     def cross(self, other):
-        return Tuple(self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z,
+        return self.__class__(self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z,
                      self.x * other.y - self.y * other.x, self.w)
+
+    def reflect(self, normal):
+        return self - normal * 2 * self.dot(normal)
 
     def __str__(self):
         return f"x: {self.x} , y: {self.y}, z: {self.z}, w: {self.w}"
 
 
 class Point(Tuple):
-    def __init__(self, x, y, z):
-        super().__init__(x, y, z, 1)
+    def __init__(self, x, y, z, w=1):
+        super().__init__(x, y, z, w)
 
     def __str__(self) -> str:
         return f"P({self.x}, {self.y}, {self.z})"
 
 
 class Vector(Tuple):
-    def __init__(self, x, y, z):
-        super().__init__(x, y, z, 0)
+    def __init__(self, x, y, z, w=0):
+        super().__init__(x, y, z, w)
 
     def __str__(self):
         return f"V({self.x}, {self.y}, {self.z})"
 
 
 class Color(Tuple):
-    def __init__(self, r, g, b):
-        super().__init__(r, g, b, 0)
+    def __init__(self, r, g, b, w=0):
+        super().__init__(r, g, b, w)
 
     @property
     def red(self):

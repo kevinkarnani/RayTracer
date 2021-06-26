@@ -55,12 +55,16 @@ class TestTuples(unittest.TestCase):
         self.assertEqual(a.normalize().magnitude(), 1)
 
     def test_dot(self):
-        a = Vector(1, 2, 3)
-        b = Vector(2, 3, 4)
-        self.assertEqual(a.dot(b), 20)
+        self.assertEqual(Vector(1, 2, 3).dot(Vector(2, 3, 4)), 20)
 
     def test_cross(self):
         a = Vector(1, 2, 3)
         b = Vector(2, 3, 4)
         self.assertEqual(a.cross(b), Vector(-1, 2, -1))
         self.assertEqual(b.cross(a), Vector(1, -2, 1))
+
+    def test_reflect_45(self):
+        self.assertEqual(Vector(1, -1, 0).reflect(Vector(0, 1, 0)), Vector(1, 1, 0))
+
+    def test_reflect_slant(self):
+        self.assertEqual(Vector(0, -1, 0).reflect(Vector((2 ** -0.5), (2 ** -0.5), 0)), Vector(1, 0, 0))
