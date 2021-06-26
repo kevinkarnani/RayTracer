@@ -1,6 +1,7 @@
 import unittest
 
 from features.intersection import Intersection, Intersections
+from features.matrix import Translation
 from features.ray import Ray
 from features.shape import Sphere
 from features.tuple import Point, Vector
@@ -57,3 +58,10 @@ class TestIntersection(unittest.TestCase):
         self.assertEqual(comps.eye_v, Vector(0, 0, -1))
         self.assertTrue(comps.inside)
         self.assertEqual(comps.normal_v, Vector(0, 0, -1))
+
+    def test_hit_offset(self):
+        s = Sphere()
+        s.set_transform(Translation(0, 0, 1))
+        comps = Intersection(5, s).prepare_computations(Ray(Point(0, 0, -5), Vector(0, 0, 1)))
+        self.assertLess(comps.over_point.z, -0.00001 / 2)
+        self.assertGreater(comps.point.z, comps.over_point.z)

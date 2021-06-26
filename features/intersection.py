@@ -20,6 +20,7 @@ class Intersection:
             comps.inside = True
             comps.normal_v = -comps.normal_v
 
+        comps.over_point = comps.point + comps.normal_v * 0.00001
         return comps
 
 
@@ -31,6 +32,7 @@ class Computations:
         self.eye_v = None
         self.normal_v = None
         self.inside = None
+        self.over_point = None
 
 
 class Intersections(list):

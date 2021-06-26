@@ -15,12 +15,16 @@ class Material:
         return self.color == other.color and self.ambient == other.ambient and self.diffuse == other.diffuse and \
                self.specular == other.specular and self.shininess == other.shininess
 
-    def lighting(self, light, point, eye, normal):
+    def lighting(self, light, point, eye, normal, in_shadow=False):
+
         diffuse = Color(0, 0, 0)
         specular = Color(0, 0, 0)
         effective_color = self.color * light.intensity
         light_v = (light.position - point).normalize()
         ambient = effective_color * self.ambient
+        if in_shadow:
+            return ambient
+
         light_dot_normal = light_v.dot(normal)
 
         if light_dot_normal >= 0:

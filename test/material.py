@@ -46,3 +46,9 @@ class TestMaterial(unittest.TestCase):
         normal_v = Vector(0, 0, -1)
         light = Light(Point(0, 0, 10), Color(1, 1, 1))
         self.assertEqual(self.m.lighting(light, self.position, eye_v, normal_v), Color(0.1, 0.1, 0.1))
+
+    def test_surface_in_shadow(self):
+        eye_v = Vector(0, 0, -1)
+        normal_v = Vector(0, 0, -1)
+        light = Light(Point(0, 0, -10), Color(1, 1, 1))
+        self.assertEqual(self.m.lighting(light, self.position, eye_v, normal_v, in_shadow=True), Color(0.1, 0.1, 0.1))

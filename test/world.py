@@ -3,7 +3,7 @@ import unittest
 from features.intersection import Intersection
 from features.light import Light
 from features.material import Material
-from features.matrix import Scaling
+from features.matrix import Scaling, Translation
 from features.ray import Ray
 from features.shape import Sphere
 from features.tuple import Point, Color, Vector
@@ -59,3 +59,29 @@ class TestWorld(unittest.TestCase):
         w.objects[0].material.ambient = 1
         w.objects[1].material.ambient = 1
         self.assertEqual(w.color_at(Ray(Point(0, 0, 0.75), Vector(0, 0, -1))), w.objects[1].material.color)
+
+    def test_collinear_no_shadow(self):
+        w = World.default()
+        self.assertFalse(w.is_shadowed(Point(0, 10, 0)))
+
+    def test_object_shadow(self):
+        w = World.default()
+        self.assertTrue(w.is_shadowed(Point(10, -10, 10)))
+
+    def test_behind_light_no_shadow(self):
+        w = World.default()
+        self.assertFalse(w.is_shadowed(Point(-20, 20, -20)))
+
+    def test_between_object_no_light(self):
+        w = World.default()
+        self.assertFalse(w.is_shadowed(Point(-2, 2, -2)))
+
+    def test_given_shadow_intersection(self):
+        w = World()
+        w.light = Light(Point(0, 0, -10), Color(1, 1, 1))
+        w.objects.append(Sphere())
+        s = Sphere()
+        s.set_transform(Translation(0, 0, 10))
+        w.objects.append(s)
+        self.assertEqual(w.shade_hit(Intersection(4, s).prepare_computations(Ray(Point(0, 0, 5), Vector(0, 0, 1)))),
+                         Color(0.1, 0.1, 0.1))

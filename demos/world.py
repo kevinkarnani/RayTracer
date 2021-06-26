@@ -54,5 +54,5 @@ if __name__ == "__main__":
     camera.transform = view_transform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
     canvas = camera.render(world)
 
-    with open("../images/world.ppm", "w") as ppm_file:
+    with open("../images/world_and_shadow.ppm", "w") as ppm_file:
         ppm_file.write(canvas.to_ppm())
