@@ -1,16 +1,18 @@
-import numpy as np
-
-from features.intersection import Intersection
+from features.intersection import Intersections, Intersection
 from features.material import Material
 from features.matrix import Matrix
 from features.tuple import Point
 
 
 class Sphere:
-    def __init__(self, origin=Point(0, 0, 0), transform=Matrix.identity(4), material=Material()):
-        self.origin = origin
-        self.transform = transform
-        self.material = material
+    def __init__(self, origin=None, transform=None, material=None):
+        self.origin = Point(0, 0, 0) if not origin else origin
+        self.transform = Matrix.identity(4) if not transform else transform
+        self.material = Material() if not material else material
+
+    def __eq__(self, other):
+        return isinstance(other, Sphere) and self.origin == other.origin and self.transform == other.transform and \
+               self.material == other.material
 
     def intersect(self, ray):
         ray = ray.transform(self.transform.inverse())
@@ -23,11 +25,11 @@ class Sphere:
         d = b ** 2 - 4 * a * c
 
         if d < 0:
-            return Intersection(np.array([]), self)
+            return Intersections()
 
         t1 = (-b - d ** 0.5) / (2 * a)
         t2 = (-b + d ** 0.5) / (2 * a)
-        return Intersection(np.vstack([t1, t2]), self)
+        return Intersections(Intersection(t1, self), Intersection(t2, self))
 
     def normal_at(self, point):
         obj_norm = self.transform.inverse() * point - self.origin

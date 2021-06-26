@@ -2,10 +2,10 @@ from features.tuple import Color
 
 
 class Canvas:
-    def __init__(self, width, height, color=Color(0, 0, 0)):
+    def __init__(self, width, height, color=None):
         self.width = width
         self.height = height
-        self.color = color
+        self.color = Color(0, 0, 0) if not color else color
         self.grid = [[color] * self.width for _ in range(self.height)]
 
     def write_pixel(self, x, y, color):

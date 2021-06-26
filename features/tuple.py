@@ -58,7 +58,7 @@ class Tuple:
 
     def cross(self, other):
         return self.__class__(self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z,
-                     self.x * other.y - self.y * other.x, self.w)
+                              self.x * other.y - self.y * other.x, self.w)
 
     def reflect(self, normal):
         return self - normal * 2 * self.dot(normal)

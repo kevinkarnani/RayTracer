@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from features.matrix import Translation, Scaling, Rotation, Shearing
+from features.matrix import Translation, Scaling, Rotation, Shearing, Matrix, view_transform
 from features.tuple import Point, Vector
 
 
@@ -67,3 +67,23 @@ class TestTransformations(unittest.TestCase):
         self.assertEqual(A * p, Point(1, -1, 0))
         self.assertEqual(B * A * p, Point(5, -5, 0))
         self.assertEqual(C * B * A * p, Point(15, 0, 7))
+
+    def test_default_view_transform(self):
+        self.assertEqual(view_transform(Point(0, 0, 0), Point(0, 0, -1), Vector(0, 1, 0)), Matrix.identity(4))
+
+    def test_z_view_transform(self):
+        self.assertEqual(view_transform(Point(0, 0, 0), Point(0, 0, 1), Vector(0, 1, 0)), Scaling(-1, 1, -1))
+
+    def test_view_transform_translates(self):
+        self.assertEqual(view_transform(Point(0, 0, 8), Point(0, 0, 0), Vector(0, 1, 0)), Translation(0, 0, -8))
+
+    def test_arbitrary_view_transform(self):
+        expected = Matrix(
+            [
+                [-0.50709, 0.50709, 0.67612, -2.36643],
+                [0.76772, 0.60609, 0.12122, -2.82843],
+                [-0.35857, 0.59761, -0.71714, 0.00000],
+                [0.00000, 0.00000, 0.00000, 1.00000],
+            ]
+        )
+        self.assertEqual(view_transform(Point(1, 3, 2), Point(4, -2, 8), Vector(1, 1, 0)), expected)

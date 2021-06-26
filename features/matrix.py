@@ -107,3 +107,18 @@ class Shearing(Matrix):
         matrix = np.eye(4)
         matrix[:3, :3] = [[1, x_y, x_z], [y_x, 1, y_z], [z_x, z_y, 1]]
         super().__init__(matrix)
+
+
+def view_transform(source, dest, up):
+    forward = (dest - source).normalize()
+    left = forward.cross(up.normalize())
+    true_up = left.cross(forward)
+    orientation = Matrix(
+        [
+            [left.x, left.y, left.z, 0],
+            [true_up.x, true_up.y, true_up.z, 0],
+            [-forward.x, -forward.y, -forward.z, 0],
+            [0, 0, 0, 1],
+        ]
+    )
+    return orientation * Translation(-source.x, -source.y, -source.z)

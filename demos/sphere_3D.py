@@ -30,10 +30,10 @@ if __name__ == "__main__":
             xs = s.intersect(r)
             hit = xs.hit()
             if hit:
-                point = r.position(hit[0])
-                normal = xs.obj.normal_at(point)
+                point = r.position(hit.t)
+                normal = hit.obj.normal_at(point)
                 eye = -r.direction
-                c = xs.obj.material.lighting(light, point, eye, normal)
+                c = hit.obj.material.lighting(light, point, eye, normal)
                 canvas.write_pixel(x, y, c)
 
     with open("../images/sphere_3D.ppm", "w") as ppm_file:

@@ -14,15 +14,17 @@ class TestShape(unittest.TestCase):
         r = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         s = Sphere()
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs, [4, 6])
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].t, 4)
+        self.assertEqual(xs[1].t, 6)
 
     def test_ray_intersects_once(self):
         r = Ray(Point(0, 1, -5), Vector(0, 0, 1))
         s = Sphere()
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs, [5, 5])
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].t, 5)
+        self.assertEqual(xs[1].t, 5)
 
     def test_ray_never_intersects(self):
         r = Ray(Point(0, 2, -5), Vector(0, 0, 1))
@@ -35,22 +37,25 @@ class TestShape(unittest.TestCase):
         r = Ray(Point(0, 0, 0), Vector(0, 0, 1))
         s = Sphere()
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs, [-1, 1])
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].t, -1)
+        self.assertEqual(xs[1].t, 1)
 
     def test_sphere_behind_ray(self):
         r = Ray(Point(0, 0, 5), Vector(0, 0, 1))
         s = Sphere()
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs, [-6, -4])
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].t, -6)
+        self.assertEqual(xs[1].t, -4)
 
     def test_intersect_sets_object(self):
         r = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         s = Sphere()
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs.obj, s)
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].obj, s)
+        self.assertEqual(xs[1].obj, s)
 
     def test_sphere_default_transformation(self):
         s = Sphere()
@@ -67,8 +72,9 @@ class TestShape(unittest.TestCase):
         s = Sphere()
         s.set_transform(Scaling(2, 2, 2))
         xs = s.intersect(r)
-        self.assertEqual(xs.count, 1)
-        self.assertEqual(xs, [3, 7])
+        self.assertEqual(xs.count, 2)
+        self.assertEqual(xs[0].t, 3)
+        self.assertEqual(xs[1].t, 7)
 
     def test_intersecting_translated_sphere_with_ray(self):
         r = Ray(Point(0, 0, -5), Vector(0, 0, 1))
