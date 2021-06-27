@@ -87,3 +87,155 @@ class Plane(Shape):
         if abs(ray.direction.y) < 0.00001:
             return Intersections()
         return Intersections(Intersection(-ray.origin.y / ray.direction.y, self))
+
+
+class Cube(Shape):
+    def __init__(self, transform=None, material=None):
+        super().__init__(transform, material)
+
+    def local_intersect(self, ray):
+        def check_axis(origin, direction):
+            t_min_numerator = (-1 - origin)
+            t_max_numerator = (1 - origin)
+            t_min = t_min_numerator / direction if abs(direction) >= 0.00001 else t_min_numerator * float('inf')
+            t_max = t_max_numerator / direction if abs(direction) >= 0.00001 else t_max_numerator * float('inf')
+            if t_min > t_max:
+                t_min, t_max = t_max, t_min
+
+            return t_min, t_max
+
+        x_t_min, x_t_max = check_axis(ray.origin.x, ray.direction.x)
+        y_t_min, y_t_max = check_axis(ray.origin.y, ray.direction.y)
+        z_t_min, z_t_max = check_axis(ray.origin.z, ray.direction.z)
+        t_min = max(x_t_min, y_t_min, z_t_min)
+        t_max = min(x_t_max, y_t_max, z_t_max)
+        return Intersections(Intersection(t_min, self),
+                             Intersection(t_max, self)) if t_min <= t_max else Intersections()
+
+    def local_normal_at(self, point):
+        max_c = max(abs(point.x), abs(point.y), abs(point.z))
+        if max_c == abs(point.x):
+            return Vector(point.x, 0, 0)
+        elif max_c == abs(point.y):
+            return Vector(0, point.y, 0)
+        return Vector(0, 0, point.z)
+
+
+class Cylinder(Shape):
+    def __init__(self, transform=None, material=None, minimum=None, maximum=None, closed=False):
+        super().__init__(transform, material)
+        self.minimum = -float('inf') if not minimum else minimum
+        self.maximum = float('inf') if not maximum else maximum
+        self.closed = closed
+
+    def local_intersect(self, ray):
+        xs = Intersections()
+        a = ray.direction.x ** 2 + ray.direction.z ** 2
+        if a >= 0.00001:
+            b = 2 * ray.origin.x * ray.direction.x + 2 * ray.origin.z * ray.direction.z
+            c = ray.origin.x ** 2 + ray.origin.z ** 2 - 1
+            disc = b ** 2 - 4 * a * c
+            if disc < 0:
+                return xs
+
+            t0 = (-b - disc ** 0.5) / (2 * a)
+            t1 = (-b + disc ** 0.5) / (2 * a)
+
+            if t0 > t1:
+                t0, t1 = t1, t0
+
+            y0 = ray.origin.y + t0 * ray.direction.y
+            if self.minimum < y0 < self.maximum:
+                xs.append(Intersection(t0, self))
+            y1 = ray.origin.y + t1 * ray.direction.y
+            if self.minimum < y1 < self.maximum:
+                xs.append(Intersection(t1, self))
+        self.intersect_caps(ray, xs)
+        return xs
+
+    def intersect_caps(self, ray, xs):
+        def check_cap(ray, t):
+            x = ray.origin.x + t * ray.direction.x
+            z = ray.origin.z + t * ray.direction.z
+            return x ** 2 + z ** 2 <= 1
+
+        if not self.closed or abs(ray.direction.y) < 0.00001:
+            return xs
+        t = (self.minimum - ray.origin.y) / ray.direction.y
+        if check_cap(ray, t):
+            xs.append(Intersection(t, self))
+        t = (self.maximum - ray.origin.y) / ray.direction.y
+        if check_cap(ray, t):
+            xs.append(Intersection(t, self))
+
+    def local_normal_at(self, point):
+        dist = point.x ** 2 + point.z ** 2
+        if dist < 1 and point.y >= self.maximum - 0.00001:
+            return Vector(0, 1, 0)
+        elif dist < 1 and point.y <= self.minimum + 0.00001:
+            return Vector(0, -1, 0)
+        else:
+            return Vector(point.x, 0, point.z)
+
+
+class Cone(Shape):
+    def __init__(self, transform=None, material=None, minimum=None, maximum=None, closed=False):
+        super().__init__(transform, material)
+        self.minimum = -float('inf') if not minimum else minimum
+        self.maximum = float('inf') if not maximum else maximum
+        self.closed = closed
+
+    def local_intersect(self, ray):
+        xs = Intersections()
+        a = ray.direction.x ** 2 - ray.direction.y ** 2 + ray.direction.z ** 2
+        b = 2 * ray.origin.x * ray.direction.x - 2 * ray.origin.y * ray.direction.y + 2 * ray.origin.z * ray.direction.z
+        c = ray.origin.x ** 2 - ray.origin.y ** 2 + ray.origin.z ** 2
+        if abs(a) >= 0.00001:
+            disc = b ** 2 - 4 * a * c
+            if disc < 0:
+                return xs
+
+            t0 = (-b - disc ** 0.5) / (2 * a)
+            t1 = (-b + disc ** 0.5) / (2 * a)
+
+            if t0 > t1:
+                t0, t1 = t1, t0
+
+            y0 = ray.origin.y + t0 * ray.direction.y
+            if self.minimum < y0 < self.maximum:
+                xs.append(Intersection(t0, self))
+            y1 = ray.origin.y + t1 * ray.direction.y
+            if self.minimum < y1 < self.maximum:
+                xs.append(Intersection(t1, self))
+        else:
+            if abs(b) >= 0.00001:
+                xs.append(Intersection(-c / (2 * b), self))
+        self.intersect_caps(ray, xs)
+        return xs
+
+    def intersect_caps(self, ray, xs):
+        def check_cap(ray, t, y):
+            x = ray.origin.x + t * ray.direction.x
+            z = ray.origin.z + t * ray.direction.z
+            return x ** 2 + z ** 2 <= y ** 2
+
+        if not self.closed or abs(ray.direction.y) < 0.00001:
+            return xs
+        t = (self.minimum - ray.origin.y) / ray.direction.y
+        if check_cap(ray, t, self.minimum):
+            xs.append(Intersection(t, self))
+        t = (self.maximum - ray.origin.y) / ray.direction.y
+        if check_cap(ray, t, self.maximum):
+            xs.append(Intersection(t, self))
+
+    def local_normal_at(self, point):
+        dist = point.x ** 2 + point.z ** 2
+        if dist < 1 and point.y >= self.maximum - 0.00001:
+            return Vector(0, 1, 0)
+        elif dist < 1 and point.y <= self.minimum + 0.00001:
+            return Vector(0, -1, 0)
+        else:
+            y = (point.x ** 2 + point.z ** 2) ** 0.5
+            if point.y > 0:
+                y = -y
+            return Vector(point.x, y, point.z)

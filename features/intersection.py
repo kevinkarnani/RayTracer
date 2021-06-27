@@ -81,3 +81,7 @@ class Intersections(list):
 
     def hit(self):
         return min([i for i in self if i.t > 0], default=None)
+
+    def append(self, obj):
+        super().append(obj)
+        self.count += 1

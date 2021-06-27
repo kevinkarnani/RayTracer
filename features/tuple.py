@@ -51,7 +51,8 @@ class Tuple:
 
     def normalize(self):
         length = self.magnitude()
-        return self.__class__(self.x / length, self.y / length, self.z / length, self.w / length)
+        return self.__class__(self.x / length, self.y / length, self.z / length,
+                              self.w / length) if length else self.__class__(0, 0, 0, 0)
 
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
