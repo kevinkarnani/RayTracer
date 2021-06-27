@@ -37,7 +37,7 @@ if __name__ == "__main__":
     world.objects.append(left)
 
     world.light = Light(Point(-10, 10, -10), Color(1, 1, 1))
-    camera = Camera(100, 50, np.pi / 3)
+    camera = Camera(1000, 500, np.pi / 3)
     camera.transform = view_transform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
     canvas = camera.render(world)
 

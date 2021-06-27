@@ -143,3 +143,8 @@ class TestShape(unittest.TestCase):
         xs = p.local_intersect(Ray(Point(0, -1, 0), Vector(0, 1, 0)))
         self.assertEqual(xs[0].t, 1)
         self.assertEqual(xs[0].obj, p)
+
+    def test_glassy_sphere(self):
+        s = Sphere.glassy()
+        self.assertEqual(s.material.transparency, 1)
+        self.assertEqual(s.material.refractive_index, 1.5)

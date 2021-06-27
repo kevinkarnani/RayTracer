@@ -5,7 +5,7 @@ from features.tuple import Point, Color
 
 if __name__ == "__main__":
     WALL_SIZE = 7
-    CANVAS_SIZE = 100
+    CANVAS_SIZE = 1000
     PIXEL_SIZE = WALL_SIZE / CANVAS_SIZE
     HALF = WALL_SIZE / 2
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     for y in range(CANVAS_SIZE):
         world_y = HALF - PIXEL_SIZE * y
-        for x in range(0, CANVAS_SIZE):
+        for x in range(CANVAS_SIZE):
             world_x = -HALF + PIXEL_SIZE * x
             position = Point(world_x, world_y, wall_z)
             v = position - ray_origin

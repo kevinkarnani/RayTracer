@@ -49,7 +49,8 @@ class Ring(Pattern):
         super().__init__(a, b, transform)
 
     def color_at(self, point):
-        return self.a if np.floor(np.sqrt(point.x ** 2 + point.z ** 2)) % 2 == 0 else self.b
+        distance = np.sqrt(point.x ** 2 + point.z ** 2)
+        return self.a if np.floor(distance) % 2 == 0 else self.b
 
 
 class Checker(Pattern):

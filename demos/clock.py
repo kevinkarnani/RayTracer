@@ -11,7 +11,7 @@ if __name__ == "__main__":
     RADIUS = 30
 
     twelve = Point(0, 0, 1)
-    c = Canvas(80, 80)
+    c = Canvas(CANVAS_SIZE, CANVAS_SIZE)
     color = Color(1, 1, 1)
 
     for hour in range(12):

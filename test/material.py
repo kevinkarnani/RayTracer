@@ -67,3 +67,10 @@ class TestMaterial(unittest.TestCase):
         self.assertEqual(self.m.lighting(self.s, light, Point(0.9, 0, 0), eye_v, normal_v), Color(1, 1, 1))
         self.assertEqual(self.m.lighting(self.s, light, Point(1.1, 0, 0), eye_v, normal_v), Color(0, 0, 0))
 
+    def test_default_reflective(self):
+        self.assertEqual(self.m.reflective, 0)
+
+    def test_default_transparency_refractive(self):
+        self.assertEqual(self.m.transparency, 0)
+        self.assertEqual(self.m.refractive_index, 1)
+

@@ -7,7 +7,7 @@ from features.tuple import Color, Point
 
 if __name__ == "__main__":
     WALL_SIZE = 7
-    CANVAS_SIZE = 100
+    CANVAS_SIZE = 1000
     PIXEL_SIZE = WALL_SIZE / CANVAS_SIZE
     HALF = WALL_SIZE / 2
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
                 point = r.position(hit.t)
                 normal = hit.obj.normal_at(point)
                 eye = -r.direction
-                c = hit.obj.material.lighting(light, point, eye, normal)
+                c = hit.obj.material.lighting(hit.obj, light, point, eye, normal)
                 canvas.write_pixel(x, y, c)
 
     with open("../images/sphere_3D.ppm", "w") as ppm_file:

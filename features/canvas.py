@@ -6,7 +6,7 @@ class Canvas:
         self.width = width
         self.height = height
         self.color = Color(0, 0, 0) if not color else color
-        self.grid = [[color] * self.width for _ in range(self.height)]
+        self.grid = [[self.color] * self.width for _ in range(self.height)]
 
     def write_pixel(self, x, y, color):
         self.grid[y][x] = color

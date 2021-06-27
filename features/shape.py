@@ -68,6 +68,13 @@ class Sphere(Shape):
         t2 = (-b + d ** 0.5) / (2 * a)
         return Intersections(Intersection(t1, self), Intersection(t2, self))
 
+    @staticmethod
+    def glassy():
+        s = Sphere()
+        s.material.transparency = 1
+        s.material.refractive_index = 1.5
+        return s
+
 
 class Plane(Shape):
     def __init__(self, transform=None, material=None):
