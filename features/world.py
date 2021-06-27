@@ -31,7 +31,7 @@ class World:
         return xs
 
     def shade_hit(self, comps):
-        return comps.obj.material.lighting(self.light, comps.point, comps.eye_v, comps.normal_v,
+        return comps.obj.material.lighting(comps.obj, self.light, comps.point, comps.eye_v, comps.normal_v,
                                            self.is_shadowed(comps.over_point))
 
     def color_at(self, r):
