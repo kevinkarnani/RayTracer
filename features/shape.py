@@ -1,3 +1,4 @@
+from features.bounds import Bounds
 from features.intersection import Intersections, Intersection
 from features.material import Material
 from features.matrix import Matrix
@@ -5,18 +6,19 @@ from features.tuple import Point, Vector
 
 
 class Shape:
-    def __init__(self, transform=None, material=None):
+    def __init__(self, transform=None, material=None, parent=None):
         self.transform = Matrix.identity(4) if not transform else transform
         self.material = Material() if not material else material
+        self.parent = parent
+        self.box = None
 
     def set_transform(self, t):
         self.transform = t
 
     def normal_at(self, point):
-        obj_norm = self.local_normal_at(self.transform.inverse() * point)
-        world_norm = self.transform.inverse().transpose() * obj_norm
-        world_norm.w = 0
-        return world_norm.normalize()
+        local_point = self.world_to_object(point)
+        local_normal = self.local_normal_at(local_point)
+        return self.normal_to_world(local_normal)
 
     def local_normal_at(self, point):
         pass
@@ -26,6 +28,25 @@ class Shape:
 
     def local_intersect(self, ray):
         pass
+
+    def world_to_object(self, point):
+        if self.parent:
+            point = self.parent.world_to_object(point)
+
+        return self.transform.inverse() * point
+
+    def bounds(self):
+        pass
+
+    def normal_to_world(self, normal):
+        normal = self.transform.inverse().transpose() * normal
+        normal.w = 0
+        normal = normal.normalize()
+
+        if self.parent:
+            normal = self.parent.normal_to_world(normal)
+
+        return normal
 
 
 class Test(Shape):
@@ -75,6 +96,9 @@ class Sphere(Shape):
         s.material.refractive_index = 1.5
         return s
 
+    def bounds(self):
+        self.box = Bounds(minimum=Point(-1, -1, -1), maximum=Point(1, 1, 1))
+
 
 class Plane(Shape):
     def __init__(self, transform=None, material=None):
@@ -87,6 +111,9 @@ class Plane(Shape):
         if abs(ray.direction.y) < 0.00001:
             return Intersections()
         return Intersections(Intersection(-ray.origin.y / ray.direction.y, self))
+
+    def bounds(self):
+        self.box = Bounds(minimum=Point(-float('inf'), 0, -float('inf')), maximum=Point(float('inf'), 0, float('inf')))
 
 
 class Cube(Shape):
@@ -119,6 +146,9 @@ class Cube(Shape):
         elif max_c == abs(point.y):
             return Vector(0, point.y, 0)
         return Vector(0, 0, point.z)
+
+    def bounds(self):
+        self.box = Bounds(minimum=Point(-1, -1, -1), maximum=Point(1, 1, 1))
 
 
 class Cylinder(Shape):
@@ -176,6 +206,9 @@ class Cylinder(Shape):
             return Vector(0, -1, 0)
         else:
             return Vector(point.x, 0, point.z)
+
+    def bounds(self):
+        self.box = Bounds(minimum=Point(-1, self.minimum, -1), maximum=Point(1, self.maximum, 1))
 
 
 class Cone(Shape):
@@ -239,3 +272,6 @@ class Cone(Shape):
             if point.y > 0:
                 y = -y
             return Vector(point.x, y, point.z)
+
+    def bounds(self):
+        self.box = Bounds(minimum=Point(-1, self.minimum, -1), maximum=Point(1, self.maximum, 1))

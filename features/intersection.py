@@ -85,3 +85,7 @@ class Intersections(list):
     def append(self, obj):
         super().append(obj)
         self.count += 1
+
+    def extend(self, iterable):
+        super().extend(iterable)
+        self.count += len(iterable)

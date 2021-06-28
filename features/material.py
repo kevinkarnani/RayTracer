@@ -4,16 +4,17 @@ from features.tuple import Color
 
 
 class Material:
-    def __init__(self, color=Color(1, 1, 1), ambient=0.1, diffuse=0.9, specular=0.9, shininess=200.0):
+    def __init__(self, color=Color(1, 1, 1), ambient=0.1, diffuse=0.9, specular=0.9, shininess=200.0, pattern=None,
+                 reflective=0, transparency=0, refractive_index=1):
         self.color = color
         self.ambient = ambient
         self.diffuse = diffuse
         self.specular = specular
         self.shininess = shininess
-        self.pattern = None
-        self.reflective = 0.0
-        self.transparency = 0.0
-        self.refractive_index = 1.0
+        self.pattern = pattern
+        self.reflective = reflective
+        self.transparency = transparency
+        self.refractive_index = refractive_index
 
     def __eq__(self, other):
         return self.color == other.color and self.ambient == other.ambient and self.diffuse == other.diffuse and \

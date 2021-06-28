@@ -74,7 +74,7 @@ if __name__ == "__main__":
     world.objects.append(blue_glass_box)
 
     world.light = Light(Point(-4.9, 4.9, -1), Color(1, 1, 1))
-    camera = Camera(800, 400, np.pi / 3)
+    camera = Camera(1000, 500, np.pi / 3)
     camera.transform = view_transform(Point(-2.6, 1.5, -3.9), Point(-0.6, 1, -0.8), Vector(0, 1, 0))
     canvas = camera.render(world)
 

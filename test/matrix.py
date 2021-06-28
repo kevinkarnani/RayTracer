@@ -118,5 +118,4 @@ class TestMatrix(unittest.TestCase):
         a = Matrix([[3, -9, 7, 3], [3, -8, 2, -9], [-4, 4, 4, 1], [-6, 5, -1, 1]])
         b = Matrix([[8, 2, 2, 2], [3, -1, 7, 0], [7, 0, 5, 4], [6, -2, 0, 5]])
         c = a * b
-        print(c * b.inverse())
         self.assertEqual(c * b.inverse(), a)

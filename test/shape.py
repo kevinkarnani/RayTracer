@@ -274,3 +274,7 @@ class TestShape(unittest.TestCase):
         self.assertEqual(co.local_normal_at(Point(0, 0, 0)), Vector(0, 0, 0))
         self.assertEqual(co.local_normal_at(Point(1, 1, 1)), Vector(1, -(2 ** 0.5), 1))
         self.assertEqual(co.local_normal_at(Point(-1, -1, 0)), Vector(-1, 1, 0))
+
+    def test_parent(self):
+        s = Test()
+        self.assertIsNone(s.parent)

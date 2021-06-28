@@ -16,6 +16,12 @@ class Tuple:
         return abs(self.x - other.x) < 0.0001 and abs(self.y - other.y) < 0.0001 and abs(
             self.z - other.z) < 0.0001 and self.w == other.w
 
+    def __le__(self, other):
+        return self.x <= other.x and self.y <= other.y and self.z <= other.z and self.w == other.w
+
+    def __ge__(self, other):
+        return self.x >= other.x and self.y >= other.y and self.z >= other.z and self.w == other.w
+
     def __add__(self, other):
         if self.w + other.w in [0, 1]:
             return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
