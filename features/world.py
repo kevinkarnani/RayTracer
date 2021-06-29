@@ -49,7 +49,7 @@ class World:
 
     def color_at(self, r, remaining=5):
         hit = self.intersect(r).hit()
-        return Color(0, 0, 0) if not hit else self.shade_hit(hit.prepare_computations(r), remaining)
+        return Color(0, 0, 0) if hit is None else self.shade_hit(hit.prepare_computations(r), remaining)
 
     def is_shadowed(self, point):
         v = self.light.position - point

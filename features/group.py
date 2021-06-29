@@ -4,7 +4,6 @@ from features.bounds import Bounds
 from features.intersection import Intersections
 from features.matrix import Translation, Scaling, Rotation
 from features.shape import Shape, Sphere, Cylinder
-from features.tuple import Point
 
 
 class Group(Shape):
@@ -14,7 +13,9 @@ class Group(Shape):
 
     def add_child(self, s):
         s.parent = self
+        s.material = self.material
         self.shapes.append(s)
+        self.bounds()
 
     def local_intersect(self, ray):
         xs = Intersections()
@@ -26,27 +27,22 @@ class Group(Shape):
             xs.sort()
         return xs
 
-    def bounds(self):
-        x_min, y_min, z_min = -float('inf'), -float('inf'), -float('inf')
-        x_max, y_max, z_max = float('inf'), float('inf'), float('inf')
+    def set_transform(self, t):
+        super().set_transform(t)
+        self.bounds()
+        self.box = self.box.transform(t)
 
+    def set_material(self, m=None):
         for shape in self.shapes:
-            shape.bounds()
-            bound = shape.box.transform(shape.transform)
-            if bound.maximum.x > x_max:
-                x_max = bound.maximum.x
-            if bound.maximum.y > y_max:
-                y_max = bound.maximum.y
-            if bound.maximum.z > z_max:
-                z_max = bound.maximum.z
-            if bound.minimum.x > x_min:
-                x_min = bound.minimum.x
-            if bound.maximum.y > y_min:
-                y_min = bound.minimum.y
-            if bound.minimum.z > z_min:
-                z_min = bound.minimum.z
+            shape.material = self.material if m is None else m
 
-        self.box = Bounds(minimum=Point(x_min, y_min, z_min), maximum=Point(x_max, y_max, z_max))
+    def bounds(self):
+        box = Bounds()
+        for shape in self.shapes:
+            if hasattr(shape, 'minimum') or hasattr(shape, 'origin') or isinstance(shape, Group):
+                shape.bounds()
+                box += shape.box.transform(shape.transform)
+        self.box = box
 
 
 class Hexagon(Group):
@@ -61,7 +57,8 @@ class Hexagon(Group):
 
         def create_edge():
             edge = Cylinder(minimum=0, maximum=1)
-            edge.set_transform(Translation(0, 0, -1) * Rotation(0, -np.pi / 6, -np.pi / 2) * Scaling(0.25, 1, 0.25))
+            edge.set_transform(Translation(0, 0, -1) * Rotation(0, -np.pi / 6) * Rotation(0, 0, -np.pi / 2)
+                               * Scaling(0.25, 1, 0.25))
             return edge
 
         def create_side():

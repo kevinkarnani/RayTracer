@@ -4,8 +4,8 @@ from features.tuple import Point
 
 class Bounds:
     def __init__(self, minimum=None, maximum=None):
-        self.minimum = Point(-float('inf'), -float('inf'), -float('inf')) if not minimum else minimum
-        self.maximum = Point(float('inf'), float('inf'), float('inf')) if not maximum else maximum
+        self.minimum = Point(float('inf'), float('inf'), float('inf')) if minimum is None else minimum
+        self.maximum = Point(-float('inf'), -float('inf'), -float('inf')) if maximum is None else maximum
 
     def add_point(self, point):
         self.minimum.x = min(self.minimum.x, point.x)
@@ -15,9 +15,16 @@ class Bounds:
         self.maximum.y = max(self.maximum.y, point.y)
         self.maximum.z = max(self.maximum.z, point.z)
 
+    def __eq__(self, other):
+        return isinstance(other, Bounds) and self.minimum == other.minimum and self.maximum == other.maximum
+
     def __add__(self, other):
         self.add_point(other.minimum)
         self.add_point(other.maximum)
+        return self
+
+    def __str__(self):
+        return f"Bounds: {{Minimum: {self.minimum}, Maximum: {self.maximum}}}"
 
     def contains_point(self, point):
         return self.minimum <= point <= self.maximum

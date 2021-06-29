@@ -2,10 +2,11 @@ import unittest
 
 import numpy as np
 
+from features.bounds import Bounds
 from features.group import Group
 from features.matrix import Matrix, Translation, Scaling, Rotation
 from features.ray import Ray
-from features.shape import Test, Sphere
+from features.shape import Test, Sphere, Cylinder
 from features.tuple import Vector, Point
 
 
@@ -82,3 +83,13 @@ class TestGroup(unittest.TestCase):
         s.set_transform(Translation(5, 0, 0))
         g2.add_child(s)
         self.assertEqual(s.normal_at(Point(1.7321, 1.1547, -5.5774)), Vector(0.2857, 0.4286, -0.8571))
+
+    def test_bounds_on_group(self):
+        g = Group()
+        self.assertIsNone(g.box)
+        g.add_child(Sphere())
+        self.assertEqual(g.box, Bounds(Point(-1, -1, -1), Point(1, 1, 1)))
+        g.add_child(Cylinder(minimum=1, maximum=2))
+        self.assertEqual(g.box, Bounds(Point(-1, -1, -1), Point(1, 2, 1)))
+        g.set_transform(Scaling(2, 10, 2))
+        self.assertEqual(g.box, Bounds(Point(-2, -10, -2), Point(2, 20, 2)))

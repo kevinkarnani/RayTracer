@@ -5,7 +5,7 @@ import numpy as np
 from features.material import Material
 from features.matrix import Translation, Scaling, Matrix, Rotation
 from features.ray import Ray
-from features.shape import Sphere, Test, Plane, Cube, Cylinder, Cone
+from features.shape import Sphere, Test, Plane, Cube, Cylinder, Cone, Triangle
 from features.tuple import Point, Vector
 
 
@@ -278,3 +278,40 @@ class TestShape(unittest.TestCase):
     def test_parent(self):
         s = Test()
         self.assertIsNone(s.parent)
+
+    def test_triangle(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.p1, Point(0, 1, 0))
+        self.assertEqual(t.p2, Point(-1, 0, 0))
+        self.assertEqual(t.p3, Point(1, 0, 0))
+        self.assertEqual(t.e1, Vector(-1, -1, 0))
+        self.assertEqual(t.e2, Vector(1, -1, 0))
+        self.assertEqual(t.normal, Vector(0, 0, -1))
+
+    def test_triangle_normal(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.normal_at(Point(0, 0.5, 0)), t.normal)
+        self.assertEqual(t.normal_at(Point(-0.5, 0.75, 0)), t.normal)
+        self.assertEqual(t.normal_at(Point(0.5, 0.25, 0)), t.normal)
+
+    def test_ray_intersects_triangle(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.intersect(Ray(Point(0, -1, -2), Vector(0, 1, 0))), [])
+
+    def test_ray_misses_p1_p3(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.intersect(Ray(Point(1, 1, -2), Vector(0, 0, 1))), [])
+
+    def test_ray_misses_p1_p2(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.intersect(Ray(Point(-1, 1, -2), Vector(0, 0, 1))), [])
+
+    def test_ray_misses_p2_p3(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        self.assertEqual(t.intersect(Ray(Point(0, -1, -2), Vector(0, 0, 1))), [])
+
+    def test_ray_strikes_triangle(self):
+        t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+        xs = t.intersect(Ray(Point(0, 0.5, -2), Vector(0, 0, 1)))
+        self.assertEqual(xs.count, 1)
+        self.assertEqual(xs[0].t, 2)

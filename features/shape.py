@@ -154,8 +154,8 @@ class Cube(Shape):
 class Cylinder(Shape):
     def __init__(self, transform=None, material=None, minimum=None, maximum=None, closed=False):
         super().__init__(transform, material)
-        self.minimum = -float('inf') if not minimum else minimum
-        self.maximum = float('inf') if not maximum else maximum
+        self.minimum = -float('inf') if minimum is None else minimum
+        self.maximum = float('inf') if maximum is None else maximum
         self.closed = closed
 
     def local_intersect(self, ray):
@@ -214,8 +214,8 @@ class Cylinder(Shape):
 class Cone(Shape):
     def __init__(self, transform=None, material=None, minimum=None, maximum=None, closed=False):
         super().__init__(transform, material)
-        self.minimum = -float('inf') if not minimum else minimum
-        self.maximum = float('inf') if not maximum else maximum
+        self.minimum = -float('inf') if minimum is None else minimum
+        self.maximum = float('inf') if maximum is None else maximum
         self.closed = closed
 
     def local_intersect(self, ray):
@@ -275,3 +275,41 @@ class Cone(Shape):
 
     def bounds(self):
         self.box = Bounds(minimum=Point(-1, self.minimum, -1), maximum=Point(1, self.maximum, 1))
+
+
+class Triangle(Shape):
+    def __init__(self, p1, p2, p3, transform=None, material=None):
+        super().__init__(transform, material)
+        self.p1 = p1
+        self.p2 = p2
+        self.p3 = p3
+        self.e1 = p2 - p1
+        self.e2 = p3 - p1
+        self.normal = self.e2.cross(self.e1).normalize()
+
+    def local_normal_at(self, point):
+        return self.normal
+
+    def local_intersect(self, ray):
+        xs = Intersections()
+        dir_cross_e2 = ray.direction.cross(self.e2)
+        det = self.e1.dot(dir_cross_e2)
+
+        if abs(det) < 0.00001:
+            return xs
+
+        f = 1 / det
+        p1_to_origin = ray.origin - self.p1
+        u = f * p1_to_origin.dot(dir_cross_e2)
+
+        if u > 1 or u < 0:
+            return xs
+
+        origin_cross_e1 = p1_to_origin.cross(self.e1)
+        v = f * ray.direction.dot(origin_cross_e1)
+
+        if v < 0 or u + v > 1:
+            return xs
+
+        t = f * self.e2.dot(origin_cross_e1)
+        return Intersections(Intersection(t, self))
